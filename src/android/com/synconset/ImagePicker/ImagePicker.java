@@ -123,6 +123,11 @@ public class ImagePicker extends CordovaPlugin {
                     this.cordova.getActivity(),
                     new String[] {Manifest.permission.READ_MEDIA_IMAGES},
                     PERMISSION_REQUEST_CODE);
+
+                ActivityCompat.requestPermissions(
+                    this.cordova.getActivity(),
+                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_CODE);
             } else {
                 ActivityCompat.requestPermissions(
                     this.cordova.getActivity(),
