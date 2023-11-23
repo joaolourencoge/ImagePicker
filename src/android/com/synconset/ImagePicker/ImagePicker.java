@@ -108,17 +108,27 @@ public class ImagePicker extends CordovaPlugin {
 
     @SuppressLint("InlinedApi")
     private boolean hasReadPermission() {
-        return Build.VERSION.SDK_INT < 23 ||
-             PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this.cordova.getActivity(), this.getMediaPermissionName());
+        return (Build.VERSION.SDK_INT < 23 || (
+            Build.VERSION.SDK_INT >= 33
+                ? PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this.cordova.getActivity(), Manifest.permission.READ_MEDIA_IMAGES)
+                : PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this.cordova.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+        ));
     }
 
     @SuppressLint("InlinedApi")
     private void requestReadPermission() {
         if (!hasReadPermission()) {
-            ActivityCompat.requestPermissions(
-                this.cordova.getActivity(),
-                new String[] {this.getMediaPermissionName()},
-                PERMISSION_REQUEST_CODE);
+           if (Build.VERSION.SDK_INT >= 33) {
+                ActivityCompat.requestPermissions(
+                    this.cordova.getActivity(),
+                    new String[] {Manifest.permission.READ_MEDIA_IMAGES},
+                    PERMISSION_REQUEST_CODE);
+            } else {
+                ActivityCompat.requestPermissions(
+                    this.cordova.getActivity(),
+                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_CODE);
+            }
         }
         // This method executes async and we seem to have no known way to receive the result
         // (that's why these methods were later added to Cordova), so simply returning ok now.
